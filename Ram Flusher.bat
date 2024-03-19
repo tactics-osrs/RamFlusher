@@ -12,20 +12,20 @@ echo Please select an option:
 echo 1. Flush DNS
 echo 2. Reset IP/WINSOCK Catalog
 echo 3. Task Kill
-echo 4. Exit
+echo 4. Start Task
+echo 5. Exit
 echo.
 
 REM Code to take user input to choose what command to execute...
 set "choice="
 set /p choice=Enter your choice: 
 
-REM Check if the input is a number between 1 and 4.
-echo.!choice!|findstr /r /c:"^[1-4]$" >nul || (
-    echo Invalid input! Please enter a number between 1 and 4.
+REM Check if the input is a number between 1 and 5.
+echo.!choice!|findstr /r /c:"^[1-5]$" >nul || (
+    echo Invalid input! Please enter a number between 1 and 5.
     pause
     goto Start
 )
-
 
 REM Flush DNS Code...
 if "!choice!"=="1" (
@@ -52,10 +52,13 @@ if "%choice%"=="3" (
     goto Start
 )
 
-
+if "%choice%"=="4" (
+    call :StartOnDemand
+    goto Start
+)
 
 REM Code for exiting...
-if "!choice!"=="4" (
+if "!choice!"=="5" (
     echo Are you sure you want to exit? ^(Y/N^)
     set /p confirm=
     if /i "!confirm!"=="Y" (
@@ -88,7 +91,16 @@ IF ERRORLEVEL 1 (
 pause
 goto :KillOnDemand
 
+:StartOnDemand
+set /p Input="Please enter the image name of the application you want to start: "
+if "%Input%"=="" goto NoInput
+start "" "%Input%"
+echo Task with image name %Input% has been started.
+set Input=
+pause
+goto :StartOnDemand
+
 :NoInput
 echo Error: No input provided. Please enter a PID or image name.
 pause
-goto :KillOnDemand
+goto :Start
